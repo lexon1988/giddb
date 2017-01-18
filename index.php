@@ -1,130 +1,138 @@
 <?php
+set_time_limit(0);
 
-$file=file('rez.txt');
+include('db.php');
+$db=new Database();
+
+$gid_file=file('list.txt');
+$counter_db=file_get_contents('counter_db.txt');
+$counter_db_count=count($gid_file);
+
+if($counter_db==$counter_db_count){
+	
+	exit();
+}
 
 
-$gid_arr= json_decode($file[0]);
-$gid_count=count($gid_arr);
-
-$git=$gid_arr[0];
+for($i=$counter_db;$i<$counter_db_count; $i++){
 
 
-$api="https://api.vk.com/method/groups.getById?group_ids=".$git."&fields=city,country,place,description,wiki_page,members_count,counters,start_date,finish_date,can_post,can_see_all_posts,activity,status,contacts,links,fixed_post,verified,site";
+$counter_db=file_get_contents('counter_db.txt');
+
+$api="https://api.vk.com/method/groups.getById?group_ids=".trim($gid_file[$counter_db])."&fields=city,country,place,description,wiki_page,members_count,counters,start_date,finish_date,can_post,can_see_all_posts,activity,status,contacts,links,fixed_post,verified,site";
 $api_rez= file_get_contents($api);
 
 $resp=json_decode($api_rez);
 
-print_r($resp);
-echo "<hr>";
 
 //gid
-echo $resp->response[0]->gid;
-echo "<br>";
+$db_arr['gid']=$resp->response[0]->gid;
 
 //name
-echo $resp->response[0]->name;
-echo "<br>";
+$db_arr['name']=$resp->response[0]->name;
 
 //screen_name
-echo $resp->response[0]->screen_name;
-echo "<br>";
+$db_arr['screen_name']=$resp->response[0]->screen_name;
 
 //is_closed
-echo $resp->response[0]->is_closed;
-echo "<br>";
+$db_arr['is_closed']=$resp->response[0]->is_closed;
 
 //type
-echo $resp->response[0]->type;
-echo "<br>";
-
+$db_arr['type']=$resp->response[0]->type;
 
 //city
-echo $resp->response[0]->city;
-echo "<br>";
+$db_arr['city']=$resp->response[0]->city;
 
 //country
-echo $resp->response[0]->country;
-echo "<br>";
+$db_arr['country']=$resp->response[0]->country;
 
 //group_photo
-echo $resp->response[0]->place->group_photo;
-echo "<br>";
+$db_arr['group_photo']=$resp->response[0]->place->group_photo;
+
+
+
 
 //checkins
-echo $resp->response[0]->place->checkins;
-echo "<br>";
+$db_arr['checkins']=$resp->response[0]->place->checkins;
+
+
 
 //updated
-echo $resp->response[0]->place->updated;
-echo "<br>";
+$db_arr['updated']=$resp->response[0]->place->updated;
+
+
 
 //description
-echo $resp->response[0]->description;
-echo "<br>";
+$db_arr['description']=$resp->response[0]->description;
+
 
 
 //wiki_page
-echo $resp->response[0]->wiki_page;
-echo "<br>";
-
+$db_arr['wiki_page']=$resp->response[0]->wiki_page;
 
 //members_count
-echo $resp->response[0]->members_count;
-echo "<br>";
+$db_arr['members_count']=$resp->response[0]->members_count;
 
 
 //COUNTERS****************************************
 
 //topics
-echo $resp->response[0]->counters->topics;
-echo "<br>";
+$db_arr['topics']=$resp->response[0]->counters->topics;
 
 //can_post
-echo $resp->response[0]->can_post;
-echo "<br>";
+$db_arr['can_post']=$resp->response[0]->can_post;
 
 //can_see_all_posts
-echo $resp->response[0]->can_see_all_posts;
-echo "<br>";
+$db_arr['can_see_all_posts']=$resp->response[0]->can_see_all_posts;
 
 //activity
-echo $resp->response[0]->activity;
-echo "<br>";
+$db_arr['activity']=$resp->response[0]->activity;
 
 //status
-echo $resp->response[0]->status;
-echo "<br>";
+$db_arr['status']=$resp->response[0]->status;
 
 //contacts1
-echo $resp->response[0]->contacts[0]->user_id;
-echo $resp->response[0]->contacts[0]->desc;
-echo "<br>";
+$db_arr['contacts1']=$resp->response[0]->contacts[0]->user_id;
+
 
 //contacts2
-echo $resp->response[0]->contacts[1]->user_id;
-echo $resp->response[0]->contacts[1]->desc;
-echo "<br>";
+$db_arr['contacts2']=$resp->response[0]->contacts[1]->user_id;
 
 //contacts3
-echo $resp->response[0]->contacts[2]->user_id;
-echo $resp->response[0]->contacts[2]->desc;
-echo "<br>";
+$db_arr['contacts3']=$resp->response[0]->contacts[2]->user_id;
+
 
 //contacts4
-echo $resp->response[0]->contacts[3]->user_id;
-echo $resp->response[0]->contacts[3]->desc;
-echo "<br>";
+$db_arr['contacts4']=$resp->response[0]->contacts[3]->user_id;
+
 
 //contacts5
-echo $resp->response[0]->contacts[4]->user_id;
-echo $resp->response[0]->contacts[4]->desc;
-echo "<br>";
+$db_arr['contacts5']=$resp->response[0]->contacts[4]->user_id;
+
 
 
 //contacts6
-echo $resp->response[0]->contacts[5]->user_id;
-echo $resp->response[0]->contacts[5]->desc;
-echo "<br>";
+$db_arr['contacts6']=$resp->response[0]->contacts[5]->user_id;
 
 
+$db_arr['desc1']=$resp->response[0]->contacts[0]->desc;
+$db_arr['desc2']=$resp->response[0]->contacts[1]->desc;
+$db_arr['desc3']=$resp->response[0]->contacts[2]->desc;
+$db_arr['desc4']=$resp->response[0]->contacts[3]->desc;
+$db_arr['desc5']=$resp->response[0]->contacts[4]->desc;
+$db_arr['desc6']=$resp->response[0]->contacts[5]->desc;
+
+
+
+
+
+
+$db->db_insert("giddb",$db_arr);
+$counter_db++;
+file_put_contents("counter_db.txt",$counter_db);
+
+
+
+
+}
 ?>
