@@ -1,16 +1,25 @@
 <?php
-set_time_limit(0);
+set_time_limit(55);
+
+
 
 include('db.php');
 $db=new Database();
 
 $gid_file=file('list.txt');
 $counter_db=file_get_contents('counter_db.txt');
+$counter_db2=file_get_contents('counter_db2.txt');
 $counter_db_count=count($gid_file);
 
 if($counter_db==$counter_db_count){
 	
 	exit();
+}
+
+if($counter_db<$counter_db2){
+	
+	$counter_db=$counter_db2;
+	
 }
 
 
@@ -137,6 +146,14 @@ $error= $resp->error->error_code;
 	unset($api);
 	unset($api_rez);
 	unset($resp);
+	
+	$rand=rand(1,5);
+	
+	if($rand==5){
+		
+		file_put_contents("counter_db2.txt",$counter_db);
+		
+	}
 	
 	//sleep(1);
 	}else{
